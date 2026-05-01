@@ -32,20 +32,28 @@ from colorama import Fore, Back, Style, init, deinit, reinit
 
 if sys.platform.startswith('win'):
     init()
-    import readline
+    try:
+        import readline
+        if not hasattr(readline, 'backend'):
+            readline.backend = 'readline'
+        readline.parse_and_bind("tab: complete")
+    except Exception:
+        pass
     import win32crypt
     p_bar = "="
     temp = 'C:\\Windows\\Temp\\'
-    readline.parse_and_bind("tab: complete")
 else:
     temp = '/tmp/'
-    import readline
-    import rlcompleter
+    try:
+        import readline
+        import rlcompleter
+        if readline.__doc__ and 'libedit' in readline.__doc__:
+            readline.parse_and_bind("bind ^I rl_complete")
+        else:
+            readline.parse_and_bind("tab: complete")
+    except Exception:
+        pass
     p_bar = '█'
-    if 'libedit' in readline.__doc__:
-        readline.parse_and_bind("bind ^I rl_complete")
-    else:
-        readline.parse_and_bind("tab: complete")
 
 if configuration_path not in sys.path:
     sys.path.append(configuration_path)
