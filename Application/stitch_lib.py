@@ -44,8 +44,6 @@ def st_send(client, data, aes_enc):
     client.sendall(eof)
 
 class stitch_commands_library:
-    __slots__= ['client', 'cli_target', 'cli_port', 'cli_os','cli_platform',
-                'cli_hostname', 'cli_user', 'cli_dwld', 'cli_temp',]
 
     def __init__(self, client, target, port, aes_key, os, platform, hostname, user, dwld, temp):
         self.client = client
@@ -70,7 +68,7 @@ class stitch_commands_library:
         if self.cli_target not in self.Config.sections():
             self.Config.add_section(self.cli_target)
             st_log.info('Connected to {} for the very first time'.format(self.cli_target))
-        self.Config.set(self.cli_target,'port',self.cli_port)
+        self.Config.set(self.cli_target,'port',str(self.cli_port))
         self.Config.set(self.cli_target,'user', self.cli_user)
         self.Config.set(self.cli_target,'os',self.cli_platform)
         self.Config.set(self.cli_target,'hostname', self.cli_hostname)
