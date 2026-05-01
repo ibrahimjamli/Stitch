@@ -107,15 +107,15 @@ def create_new_config():
         KEYLOGGER_BOOT = False
 
     stini = stitch_ini()
-    stini.set_value('BIND', BIND)
-    stini.set_value('BHOST',BHOST)
-    stini.set_value('BPORT',BPORT)
-    stini.set_value('LISTEN',LISTEN)
-    stini.set_value('LHOST',LHOST)
-    stini.set_value('LPORT',LPORT)
-    stini.set_value('EMAIL',GMAIL_USER)
-    stini.set_value('EMAIL_PWD',GMAIL_PWD)
-    stini.set_value('KEYLOGGER_BOOT',KEYLOGGER_BOOT)
+    stini.set_value('BIND', str(BIND))
+    stini.set_value('BHOST',str(BHOST))
+    stini.set_value('BPORT',str(BPORT))
+    stini.set_value('LISTEN',str(LISTEN))
+    stini.set_value('LHOST',str(LHOST))
+    stini.set_value('LPORT',str(LPORT))
+    stini.set_value('EMAIL',str(GMAIL_USER))
+    stini.set_value('EMAIL_PWD',str(GMAIL_PWD))
+    stini.set_value('KEYLOGGER_BOOT',str(KEYLOGGER_BOOT))
 
     return confirm_config()
 
