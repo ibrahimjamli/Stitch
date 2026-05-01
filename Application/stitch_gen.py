@@ -213,7 +213,7 @@ exe = EXE(pyz,
 
     with open('st_main.spec','w') as st:
         st.write(st_spec)
-    st_log.info(run_command('pyinstaller --onefile --distpath={} st_main.spec'.format(dist_dir)))
+    st_log.info(run_command('python3 -m PyInstaller --onefile --distpath={} st_main.spec'.format(dist_dir)))
 
     binary = os.path.join(dist_dir,name)
     binary_dir = os.path.join(dist_dir,'Binaries')
