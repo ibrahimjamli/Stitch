@@ -82,13 +82,13 @@ def run_command(command):
         subp = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         subp_output, errors = subp.communicate()
         if not errors:
-            if subp_output == '':
+            if not subp_output:
                 return '[+] Command successfully executed.\n'
             else:
-                return subp_output
-        return "[!] {}\n".format(errors)
+                return subp_output.decode('utf-8', errors='replace')
+        return "[!] {}\n".format(errors.decode('utf-8', errors='replace'))
     except KeyboardInterrupt:
-        print "Terminated command."
+        print("Terminated command.")
 
 def no_error(cmd_output):
     if cmd_output.startswith("ERROR:") or cmd_output.startswith("[!]"):
@@ -145,7 +145,7 @@ SectionEnd'''.format(nsis_Version[name],nsis_ProductName[name],nsis_CompanyName[
             nsis_InternalName[name],nsis_LegalCopyright[name],nsis_Name[name],outfile,path,exe_name)
 
     nsis_script = os.path.join(conf_dir,'nsis_setup.nsi')
-    with open(nsis_script,'wb') as ns:
+    with open(nsis_script,'w') as ns:
         ns.write(setup_nsi)
 
     insts_dir = os.path.join(conf_dir,'insts')

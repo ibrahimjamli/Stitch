@@ -1,0 +1,30 @@
+[05/01/2026 04:17:07 PM] INFO: Starting Stitch
+[05/01/2026 04:17:07 PM] INFO: Now listening on port 4040
+[05/01/2026 04:17:07 PM] INFO: Exiting Stitch...
+[05/01/2026 05:18:26 PM] INFO: Starting Stitch
+[05/01/2026 05:18:26 PM] INFO: Now listening on port 4040
+[05/01/2026 05:18:26 PM] INFO: Exiting Stitch due to an exception:
+module 'readline' has no attribute 'backend'
+[05/01/2026 05:18:26 PM] ERROR: module 'readline' has no attribute 'backend'
+[05/01/2026 05:18:26 PM] INFO: Exiting Stitch...
+[05/01/2026 05:19:01 PM] INFO: Starting Stitch
+[05/01/2026 05:19:01 PM] INFO: Now listening on port 4040
+[05/01/2026 05:19:01 PM] INFO: Exiting Stitch due to an exception:
+module 'readline' has no attribute 'backend'
+[05/01/2026 05:19:01 PM] ERROR: module 'readline' has no attribute 'backend'
+[05/01/2026 05:19:01 PM] INFO: Exiting Stitch...
+[05/01/2026 05:19:29 PM] INFO: Starting Stitch
+[05/01/2026 05:19:29 PM] INFO: Now listening on port 4040
+[05/01/2026 05:19:29 PM] INFO: Exiting Stitch...
+[05/01/2026 05:20:14 PM] INFO: Starting Stitch
+[05/01/2026 05:20:14 PM] INFO: Now listening on port 4040
+[05/01/2026 05:20:16 PM] INFO: Exiting Stitch due to a KeyboardInterrupt
+[05/01/2026 05:20:16 PM] INFO: Exiting Stitch...
+[05/01/2026 05:25:50 PM] INFO: Starting Stitch
+[05/01/2026 05:25:50 PM] INFO: Now listening on port 4040
+[05/01/2026 05:25:58 PM] INFO: Exiting Stitch due to a KeyboardInterrupt
+[05/01/2026 05:25:58 PM] INFO: Exiting Stitch...
+[05/01/2026 06:59:01 PM] INFO: Starting Stitch
+[05/01/2026 06:59:01 PM] INFO: Now listening on port 4040
+[05/01/2026 06:59:02 PM] INFO: Exiting Stitch due to a KeyboardInterrupt
+[05/01/2026 06:59:02 PM] INFO: Exiting Stitch...

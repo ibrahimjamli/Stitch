@@ -5,8 +5,8 @@
 import os
 import shutil
 import subprocess
-from globals import *
-from payload_setup import *
+from .globals import *
+from .payload_setup import *
 
 mkself_path = os.path.join(tools_path,'makeself')
 mkself_exe = os.path.join(mkself_path,'makeself.sh')
@@ -16,13 +16,13 @@ def run_command(command):
         subp = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         subp_output, errors = subp.communicate()
         if not errors:
-            if subp_output == '':
+            if not subp_output:
                 return '[+] Command successfully executed.\n'
             else:
-                return subp_output
-        return "[!] {}\n".format(errors)
+                return subp_output.decode('utf-8', errors='replace')
+        return "[!] {}\n".format(errors.decode('utf-8', errors='replace'))
     except KeyboardInterrupt:
-        print "Terminated command."
+        print("Terminated command.")
 
 def no_error(cmd_output):
     if cmd_output.startswith("ERROR:") or cmd_output.startswith("[!]"):
